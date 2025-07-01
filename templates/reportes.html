@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Reportes de Asistencia</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Alumno</th>
+            <th>Hora Entrada</th>
+            <th>Hora Salida</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for asistencia in asistencias %}
+        <tr>
+            <td>{{ asistencia.alumno.nombre }} {{ asistencia.alumno.apellido }}</td>
+            <td>{{ asistencia.hora_entrada }}</td>
+            <td>{{ asistencia.hora_salida }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

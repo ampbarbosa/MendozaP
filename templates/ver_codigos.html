@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Códigos de Barras</title>
+  <style> /* estilos simples de tabla */ </style>
+</head>
+<body>
+  <h1>Alumnos y sus Códigos</h1>
+  <table>
+    <thead><tr><th>ID</th><th>Nombre</th><th>Código de Barras</th></tr></thead>
+    <tbody>
+      {% for a in alumnos %}
+      <tr>
+        <td>{{ a.id }}</td>
+        <td>{{ a.nombre }}</td>
+        <td><img src="{{ a.barcode_url }}" alt="Barcode {{ a.id }}"></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
