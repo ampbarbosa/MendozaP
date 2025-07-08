@@ -9,17 +9,25 @@
   <div class="row">
     {% for alumno in alumnos %}
     <div class="col-md-4 mb-4">
-      <div class="card border-primary p-3">
-        <h5 class="card-title">
-          {{ alumno.nombre }} {{ alumno.apellido }}
-        </h5>
-        <p class="card-text">
-          Matrícula: <strong>{{ alumno.matricula }}</strong><br>
-          Código de Barras: <strong>{{ alumno.codigo_barras }}</strong>
-        </p>
-        <img class="img-fluid"
-             src="{{ url_for('alumnos_bp.generar_codigo_imagen', valor=alumno.codigo_barras) }}"
-             alt="Código de barras para {{ alumno.codigo_barras }}">
+      <div class="card shadow-sm border-primary">
+        <div class="card-body">
+          <h5 class="card-title text-primary fw-bold">
+            {{ alumno.nombre }} {{ alumno.apellido }}
+          </h5>
+          <p class="card-text mb-2">
+            <span class="form-label d-block mb-0">Matrícula:</span>
+            <strong>{{ alumno.matricula }}</strong>
+          </p>
+          <p class="card-text mb-3">
+            <span class="form-label d-block mb-0">Código de Barras:</span>
+            <strong>{{ alumno.codigo_barras }}</strong>
+          </p>
+          <div class="text-center">
+            <img class="img-fluid"
+                 src="{{ url_for('alumnos_bp.generar_codigo_imagen', valor=alumno.codigo_barras) }}"
+                 alt="Código de barras para {{ alumno.codigo_barras }}">
+          </div>
+        </div>
       </div>
     </div>
     {% endfor %}

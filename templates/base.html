@@ -73,6 +73,50 @@
                 </a>
               </li>
 
+            <li class="nav-item">
+                 <a class="nav-link" href="{{ url_for('alumnos_bp.mostrar_credenciales') }}">
+                  <i class="fas fa-id-badge"></i>
+                  <span>Credenciales</span>
+                </a>
+              </li>
+
+            <li class="nav-item">
+                 <a class="nav-link" href="{{ url_for('registro_bp.mostrar_formulario_registro') }}">
+                  <i class="fas fa-toilet-paper"></i>
+                  <span>Registro Baño</span>
+                </a>
+              </li>
+            
+            <li class="nav-item">
+                 <a class="nav-link" href="{{ url_for('registro_bp.ver_registros_banio') }}">
+                  <i class="fas fa-list-alt"></i>
+                  <span>Historial Baño</span>
+                </a>
+              </li> 
+
+            <li class="nav-item">
+                 <a class="nav-link" href="{{ url_for('entrada_bp.mostrar_formulario_asistencia') }}">
+                  <i class="fas fa-user-check"></i>
+                  <span>Registro Asistencia</span>
+                </a>
+              </li> 
+
+            <li class="nav-item">
+                 <a class="nav-link" href="{{ url_for('entrada_bp.ver_registros_asistencia') }}">
+                  <i class="fas fa-user-clock"></i>
+                  <span>Historial Asistencia</span>
+                </a>
+              </li>
+
+            <li class="nav-item">
+                   <a class="nav-link" href="{{ url_for('reportes_bp.formulario_reporte') }}">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Reporte de Incidencia</span>
+                  </a>
+                </li>
+
+              
+              
             <!-- Divisor -->
             <hr class="sidebar-divider d-none d-md-block">
         </ul>

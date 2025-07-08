@@ -3,6 +3,8 @@ from models import db, Alumno
 from sqlalchemy.exc import SQLAlchemyError
 import io
 import barcode
+print("Ruta real del módulo barcode:", barcode.__file__)
+
 from barcode.writer import ImageWriter
 
 alumnos_bp = Blueprint("alumnos_bp", __name__)

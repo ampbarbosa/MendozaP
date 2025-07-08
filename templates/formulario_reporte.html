@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Generar Reporte de Incidencia{% endblock %}
+
+{% block content %}
+<style>
+  @media print {
+    .no-print {
+      display: none;
+    }
+  }
+  .firma-line {
+    border-top: 1px solid #333;
+    margin: 30px 0;
+  }
+</style>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Reporte de Incidencia</h2>
+    <img id="logoMendozaImg" src="{{ url_for('static', filename='images/Logo Mendoza.png') }}"
+         alt="Logo Instituto Mendoza" style="height: 80px;">
+  </div>
+
+  <div class="no-print">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <form method="post" class="mb-4 no-print">
+    <div class="input-group">
+      <input type="text" name="codigo" class="form-control" placeholder="Escanea o ingresa código de barras" required>
+      <button class="btn btn-primary" type="submit">Buscar alumno</button>
+    </div>
+  </form>
+
+  {% if alumno %}
+  <form method="post" action="{{ url_for('reportes_bp.registrar_reporte', alumno_id=alumno.id) }}">
+    <div class="card p-4 shadow-sm">
+      <h5 class="mb-3">Datos del Alumno</h5>
+
+      <div class="mb-2"><strong>Nombre:</strong> {{ alumno.nombre }}</div>
+      <div class="mb-2"><strong>Apellido:</strong> {{ alumno.apellido }}</div>
+      <div class="mb-2"><strong>Matrícula:</strong> {{ alumno.matricula }}</div>
+      <div class="mb-2"><strong>Fecha:</strong> {{ fecha.strftime('%Y-%m-%d') }}</div>
+      <div class="mb-2"><strong>Hora:</strong> {{ fecha.strftime('%H:%M:%S') }}</div>
+
+      <hr>
+
+      <div class="mb-3">
+        <label for="grupo" class="form-label">Grupo</label>
+        <input type="text" name="grupo" id="grupo" class="form-control" placeholder="Ej. 2B" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="motivo" class="form-label">Motivo de la incidencia</label>
+        <textarea name="motivo" id="motivo" rows="3" class="form-control" placeholder="Describe el motivo..." required></textarea>
+      </div>
+
+      <hr>
+
+      <div class="row mt-4">
+        <div class="col-md-6 text-center">
+          <p><strong>Firma del padre o tutor</strong></p>
+          <div class="firma-line"></div>
+        </div>
+        <div class="col-md-6 text-center">
+          <p><strong>Firma de Prefectura</strong></p>
+          <div class="firma-line"></div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between mt-4 no-print">
+        <button id="exportarPDF" type="button" class="btn btn-danger">Generar PDF</button>
+        <button type="submit" class="btn btn-success">Registrar Reporte</button>
+      </div>
+    </div>
+  </form>
+
+  <table id="tablaReportePDF" style="display: none;">
+    <tbody>
+      <tr><td>Nombre</td><td>{{ alumno.nombre }}</td></tr>
+      <tr><td>Apellido</td><td>{{ alumno.apellido }}</td></tr>
+      <tr><td>Matrícula</td><td>{{ alumno.matricula }}</td></tr>
+      <tr><td>Fecha</td><td>{{ fecha.strftime('%Y-%m-%d') }}</td></tr>
+      <tr><td>Hora</td><td>{{ fecha.strftime('%H:%M:%S') }}</td></tr>
+      <tr><td>Grupo</td><td id="grupoPDF"></td></tr>
+      <tr><td>Motivo</td><td id="motivoPDF"></td></tr>
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+
+<!-- Scripts PDFMake -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<script>
+  document.getElementById("exportarPDF").addEventListener("click", function () {
+    const grupo = document.getElementById("grupo").value || "";
+    const motivo = document.getElementById("motivo").value || "";
+    document.getElementById("grupoPDF").innerText = grupo;
+    document.getElementById("motivoPDF").innerText = motivo;
+
+    const filas = [];
+    document.querySelectorAll("#tablaReportePDF tbody tr").forEach(tr => {
+      const campo = tr.children[0].innerText;
+      const valor = tr.children[1].innerText;
+      filas.push([campo, valor]);
+    });
+
+    const imgElement = document.getElementById("logoMendozaImg");
+    const canvas = document.createElement("canvas");
+    canvas.width = imgElement.naturalWidth;
+    canvas.height = imgElement.naturalHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(imgElement, 0, 0);
+    const logoBase64 = canvas.toDataURL("image/png");
+
+    const docDefinition = {
+      content: [
+        {
+          image: logoBase64,
+          width: 100,
+          alignment: 'right',
+          margin: [0, 0, 0, 10]
+        },
+        { text: 'Instituto Mendoza', style: 'header' },
+        { text: 'Reporte de Incidencia', style: 'subheader', margin: [0, 0, 0, 10] },
+        {
+          table: { widths: ['*', '*'], body: filas },
+          margin: [0, 10, 0, 20]
+        },
+        {
+          columns: [
+            {
+              width: '50%',
+              alignment: 'center',
+              stack: [
+                { text: 'Firma del padre o tutor', margin: [0, 0, 0, 10] },
+                {
+                  canvas: [{ type: 'line', x1: 0, y1: 0, x2: 180, y2: 0, lineWidth: 1 }],
+                  margin: [0, 0, 0, 0]
+                }
+              ]
+            },
+            {
+              width: '50%',
+              alignment: 'center',
+              stack: [
+                { text: 'Firma de Prefectura', margin: [0, 0, 0, 10] },
+                {
+                  canvas: [{ type: 'line', x1: 0, y1: 0, x2: 180, y2: 0, lineWidth: 1 }],
+                  margin: [0, 0, 0, 0]
+                }
+              ]
+            }
+          ],
+          columnGap: 40,
+          margin: [0, 40, 0, 0]
+        }
+      ],
+      styles: {
+        header: { fontSize: 18, bold: true, alignment: 'center', margin: [0, 0, 0, 10] },
+        subheader: { fontSize: 14, bold: true, alignment: 'center' }
+      }
+    };
+
+    pdfMake.createPdf(docDefinition).download("reporte_incidente.pdf");
+  });
+</script>
+{% endblock %}
